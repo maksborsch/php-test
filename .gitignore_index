@@ -1,0 +1,125 @@
+<?php
+header('Access-Control-Allow-Origin: *');
+header("Access-Control-Allow-Headers: *");
+header('Access-Control-Allow-Methods: GET, POST, PUT');
+
+include 'DbConnect.php';
+$objDb = new DbConnect;
+$conn = $objDb->connect();
+$apikey = "Yhfm1ZwzDuXROatGqDUHr2eVlHU2GfIE";
+$host = "http://dataservice.accuweather.com/locations/v1/cities/autocomplete";
+$query = isset($_POST["query"]);
+
+function search($host, $apikey, $query)
+{
+
+    $params = '?apikey=' . $apikey . '&q=' . urlencode($query);
+
+    $options = array(
+        'http' => array(
+            
+            'method' => 'POST'
+        )
+    );
+    $context  = stream_context_create($options);
+    $result = file_get_contents($host . $params, false, $context);
+    return $result;
+}
+
+$result = search($host, $apikey, $query);
+
+echo json_encode(json_decode($result), JSON_PRETTY_PRINT);
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form method="POST">
+        <input type="text" name="query" placeholder="Search" />
+        <input type="submit" value="SUBMIT"></input>
+    </form>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <?php
+$callapi = FALSE;
+
+if (isset($_SESSION['countries'])) {
+    $response = getCountriesResponse();
+    $formattedCountries = formatCountries($response);
+    $countries = $formattedCountries;
+}
+$search = file_get_contents('php://input');
+$results = getCountriesByInput($search, $countries);
+echo $_GET['callback'] . '(' . html_entity_decode(json_encode($results)) . ')';
+
+function getCountriesByInput($search, $allCountries)
+{
+    $countries = [];
+    $count = 0;
+    foreach ($allCountries as $country) {
+        $countryMatchesSearchInput = false;
+
+        $searchFields = [
+            strtolower($country['name']),
+        ];
+    }
+}
+
+function getCountriesResponse()
+{
+    $apikey = "Yhfm1ZwzDuXROatGqDUHr2eVlHU2GfIE";
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => "http://dataservice.accuweather.com/locations/v1/cities/autocomplete?" . $apikey,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        CURLOPT_HTTPHEADER => array(
+            "cache-control: no-cache"
+        ),
+    ));
+    $response = curl_exec($curl);
+    $err = curl_error($curl);
+    curl_close($curl);
+    return json_decode($response, true);
+}
+
+function formatCountries($response)
+{
+    $countries = [];
+    foreach ($response as $country) {
+        $formattedCountry = array(
+            "name" => $country["name"],
+        );
+        $formattedCountry = array_map('htmlentities', $formattedCountry);
+        array_push($countries, $formattedCountry);
+    }
+    return $countries;
+}?> -->

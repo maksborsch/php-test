@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<?php
+    if (isset($_POST['location'])) {
+        $apikey = "Yhfm1ZwzDuXROatGqDUHr2eVlHU2GfIE";
+        $loc =  $_POST['location'];
+        $urlContents = file_get_contents('http://dataservice.accuweather.com/currentconditions/v1/' . $loc . '&apikey=' . $apikey);
+        $newdata = json_decode($urlContents, true);
+        echo $newdata->Key;
+    }
+    ?>
+
+<body>
+    <form method="post" action="">
+        Enter you location: <input type="text" name="location">
+        <input type="submit" value="submit">
+        <?php echo $newdata->Key;?>
+    </form>
+    
+    <form>
+        Select your prefernce <select id="location_key" onchange="getlocation();">
+            <option value="">Choose from followings</option>
+            <?php
+            foreach ($newdata as $val) {
+            ?>
+                <option value="<?php echo $val->Key; ?>"><?php echo $val->LocalizedName . ',' . $val->AdministrativeArea->LocalizedName . ',' . $val->Country->LocalizedName; ?></option>
+            <?php
+            }
+            ?>
+        </select>
+    </form>
+    <?php
+    include 'DbConnect.php';
+    $objDb = new DbConnect;
+    $conn = $objDb->connect();
+
+    $weather = "";
+
+    $error = "";
+
+    if ($_GET['city']) {
+        $city = $_GET['city'];
+        $apikey = "Yhfm1ZwzDuXROatGqDUHr2eVlHU2GfIE";
+        $apiUrl = "http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=" . $apikey . "&q=" . $city;
+        $ch = curl_init($url);  //open connection
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $result = curl_exec($ch);
+        $newdata = json_decode($result);
+    }
+
+
+    ?>
+    <div class="container">
+        <form>
+            <fieldset class="form-group">
+                <label for="city">Enter the name of a city.</label>
+                <input type="text" class="form-control" name="city" id="city" placeholder="Eg. London, Tokyo" value="<?php echo $_GET['city']; ?>">
+            </fieldset>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <div id="weather"><?php
+                            if ($weather) {
+                                echo '<div class="alert alert-success" role="alert">' . $weather . '</div>';
+                            } else if ($error) {
+                                echo '<div class="alert alert-danger" role="alert">' . $error . '</div>';
+                            } ?></div>
+    </div>
+</body>
+
+
+</html>
