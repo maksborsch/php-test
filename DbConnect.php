@@ -15,17 +15,3 @@ class DbConnect {
         }
     }
 
-}
-// $server = 'localhost:3307';
-// $dbname = 'test';
-// $user = 'root';
-// $pass = "";
-// $conn = mysqli_connect($server, $user, $pass, $dbname);
-// function sql_connect()
-// {
-//     global $conn;
-//     if ($conn->connect_error) {
-//         die("Connection failed: " . $conn->connect_error);
-//     }
-//     return $conn;
-// }
