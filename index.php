@@ -35,10 +35,14 @@ if (isset($_POST['cityId'])) {
 foreach ($data as $result) {
     $localizedName = $result["LocalizedName"];
     $idKey = $result["Key"];
-    $conn->query("INSERT INTO cities (LocalizedName, idKey) VALUES ('$localizedName',
+    $q = $conn->query("SELECT * FROM cities WHERE idKey='$idKey' ");
+    if (!$q || $q->rowCount() > 0) {
+        echo "";
+    } else {
+        $conn->query("INSERT INTO cities (LocalizedName, idKey) VALUES ('$localizedName',
 			'$idKey')");
+    }
 }
-
 
 if (isset($_POST['idKey'])) {
     $ch = curl_init();
